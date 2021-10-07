@@ -3,7 +3,7 @@ module.exports = {
     password: "admin",
 
     server: "",
-    database: "",
+    database: "PanDeCabron",
 
     // server: "",
     // database: "",
