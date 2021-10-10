@@ -1,3 +1,4 @@
+/*supongo que una forma de almacenar cada metodo*/ 
 const express = require("express");
 const router = express.Router();
 

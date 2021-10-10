@@ -1,15 +1,15 @@
-const sql = require("mssql");
+const sql = require("mssql");//Constante para la conexion
 const configMaster = require("../database/config-master");
 const configSlave = require("../database/config-slave");
 
 const getProducts = (req, res) => {
-    sql.connect(configSlave, (err) => {
+    sql.connect(configSlave, (err) => { //Conexion a base
         if (err) {
-            res.status(400).send(err.message);
+            res.status(400).send(err.message); //En caso de que no conecte
 
         } else {
 
-            var request = new sql.Request();
+            var request = new sql.Request(); //Request para obtener los productos
             request.query(`SELECT P.idProduct, P.nameProduct, P.stockProduct, P.imgProduct, P.priceProduct, C.nameCategory FROM Categories AS C LEFT JOIN Products as P ON (P.idCategory = C.idCategory) ORDER BY nameProduct`, (e, r) => {
                 if (e) {
                     res.status(400).send(e.message);
@@ -21,7 +21,7 @@ const getProducts = (req, res) => {
     });
 } 
 
-const getProduct= (req, res) => {
+const getProduct= (req, res) => { //No estoy seguro de que cambia entre este y el de arriba
     sql.connect(configSlave, (err) => {
         if (err) {
             res.status(400).send(err.message);
@@ -41,7 +41,7 @@ const getProduct= (req, res) => {
 } 
 
 
-const deleteProduct = (req, res) => {
+const deleteProduct = (req, res) => { //Misma cosa para la conexion
     sql.connect(configMaster, (err) => {
         if (err) {
             res.status(400).send(err.message);
