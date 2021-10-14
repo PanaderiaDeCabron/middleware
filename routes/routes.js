@@ -1,7 +1,7 @@
-/*supongo que una forma de almacenar cada metodo*/ 
 const express = require("express");
 const router = express.Router();
 
+//Importacion de controladores de la base de datos
 const { getProducts } = require("../controllers/product_controllers");
 const { getProduct } = require("../controllers/product_controllers");
 const { deleteProduct } = require("../controllers/product_controllers");
@@ -38,16 +38,16 @@ router.get('/user/name/:name', getUserByName);
 const { getCategoryByName } = require('../controllers/product_controllers');
 router.get('/category/name/:name', getCategoryByName);
 
-const { getRecords } = require('../controllers/record_controller');
-const { addRecord } = require('../controllers/record_controller');
+const { getRecords } = require('../controllers/purchase_controller');
+const { addRecord } = require('../controllers/purchase_controller');
 router.get('/records/:id', getRecords);
 router.post('/records', addRecord);
 
-const { beginTrans } = require('../controllers/record_controller');
-const { commitTrans } = require('../controllers/record_controller');
-const { rollbackTrans } = require('../controllers/record_controller');
+const { beginTrans } = require('../controllers/purchase_controller');
+const { commitTrans } = require('../controllers/purchase_controller');
+const { rollbackTrans } = require('../controllers/purchase_controller');
 router.post('/trans', beginTrans);
 router.post('/commit', commitTrans);
 router.post('/rollback', rollbackTrans);
 
-module.exports = router;
+module.exports = router; //Exportacion del modulo

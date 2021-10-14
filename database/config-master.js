@@ -2,7 +2,7 @@ module.exports = {
     user:  "admin",
     password: "admin",
 
-    server: "",
+    server: "", //IP de la computadora
     database: "PanDeCabron",
 
     // server: "",

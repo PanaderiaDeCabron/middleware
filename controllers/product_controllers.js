@@ -1,5 +1,6 @@
+//Control del CRUD
 const sql = require("mssql");//Constante para la conexion
-const configMaster = require("../database/config-master");
+const configMaster = require("../database/config-master"); //
 const configSlave = require("../database/config-slave");
 
 const getProducts = (req, res) => {
