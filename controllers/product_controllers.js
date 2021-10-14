@@ -48,7 +48,7 @@ const addProduct = (param, result) => {//Agregar producto nuevo
         else {
             var request = new con.Request();//Nueva petición
             var data = param.body;
-            request.query(`INSERT INTO Productos (IdCategoria, Nombre, ImagenProd, Stock, Precio) VALUES ('${data.IdCategoria}', ${data.Nombre}, '${data.ImagenProd}', ${data.Stock}, ${data.Precio})`, (e, r) => {
+            request.query(`INSERT INTO Productos (IdCategoria, Nombre, ImagenProd, Stock, Precio) VALUES (${data.IdCategoria}, '${data.Nombre}', '${data.ImagenProd}', ${data.Stock}, ${data.Precio})`, (e, r) => {
                 if (e) result.status(400).send(`Request error: ${e.message}`);
                 else result.status(200).send(r.recordset);
             });
