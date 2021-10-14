@@ -38,16 +38,16 @@ router.get('/user/name/:name', getUserByName);
 const { getCategoryByName } = require('../controllers/product_controllers');
 router.get('/category/name/:name', getCategoryByName);
 
-const { getRecords } = require('../controllers/purchase_controller');
-const { addRecord } = require('../controllers/purchase_controller');
-router.get('/records/:id', getRecords);
-router.post('/records', addRecord);
+const { getPurchases } = require('../controllers/purchase_controller');
+const { addPurchase } = require('../controllers/purchase_controller');
+router.get('/purchases/:id', getPurchases);
+router.post('/purchases', addPurchase);
 
-const { beginTrans } = require('../controllers/purchase_controller');
-const { commitTrans } = require('../controllers/purchase_controller');
-const { rollbackTrans } = require('../controllers/purchase_controller');
-router.post('/trans', beginTrans);
-router.post('/commit', commitTrans);
-router.post('/rollback', rollbackTrans);
+const { startTransaction } = require('../controllers/purchase_controller');
+const { commitTransaction } = require('../controllers/purchase_controller');
+const { rollbackTransaction } = require('../controllers/purchase_controller');
+router.post('/trans', startTransaction);
+router.post('/commit', commitTransaction);
+router.post('/rollback', rollbackTransaction);
 
 module.exports = router; //Exportacion del modulo
