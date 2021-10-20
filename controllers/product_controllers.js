@@ -4,11 +4,11 @@ const configMaster = require("../database/config-master"); //
 const configSlave = require("../database/config-slave");
 
 const getProducts = (req, res) => { //Parametros de request y response
-    console.log("Entrando");
     sql.connect(configSlave, (err) => { //Conexion a base pasando la configuracion del config
         if (err) {
+            console.log(err);
             res.status(400).send(err.message); //En caso de que no conecte y lanza el error
-
+            
         } else {
             var request = new sql.Request(); //Creacion de la solicitud
             request.query(`SELECT P.idProduct, P.nameProduct, P.stockProduct, P.imgProduct, P.priceProduct, C.nameCategory FROM Categories AS C LEFT JOIN Products as P ON (P.idCategory = C.idCategory) ORDER BY nameProduct`, (e, r) => {

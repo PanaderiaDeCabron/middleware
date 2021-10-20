@@ -1,8 +1,8 @@
 module.exports = {
-    user:  "admin",
-    password: "admin",
+    user:  "Rodrigo",
+    password: "Pan123",
     
-    server: "",
+    server: "localhost",
     database: "PanDeCabron",
 
     // server: "",
