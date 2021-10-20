@@ -1,105 +1,145 @@
-const con = require("mssql");
-const masterBD = require("../database/config-master");
-const slaveDB = require("../database/config-slave");
+//Control del CRUD
+const sql = require("mssql");//Constante para la conexion
+const configMaster = require("../database/config-master"); //
+const configSlave = require("../database/config-slave");
 
-const getProducts = (param, result) => {//Obtener todos los productos de la BD
-    con.connect(slaveDB, (error) => {//Conexión a la BD
-        if (error) result.status(400).send(error.message);//Indicar error
-        else {
-            var request = new con.Request();//Nueva petición
-            request.query(`SELECT Productos.ID_Producto, Productos.Nombre, Productos.Stock, Productos.ImagenProd, Productos.Precio, Categorias.NombreCat FROM Productos INNER JOIN Categorias ON Productos.IdCategoria = Categorias.Id_Categoria ORDER BY Productos.Nombre`, (e, r) => {
-                if (e) result.status(400).send(e.message);
-                else result.status(200).send(r.recordset);//Devolver productos
+const getProducts = (req, res) => { //Parametros de request y response
+    console.log("Entrando");
+    sql.connect(configSlave, (err) => { //Conexion a base pasando la configuracion del config
+        if (err) {
+            res.status(400).send(err.message); //En caso de que no conecte y lanza el error
+
+        } else {
+            var request = new sql.Request(); //Creacion de la solicitud
+            request.query(`SELECT P.idProduct, P.nameProduct, P.stockProduct, P.imgProduct, P.priceProduct, C.nameCategory FROM Categories AS C LEFT JOIN Products as P ON (P.idCategory = C.idCategory) ORDER BY nameProduct`, (e, r) => {
+                if (e) {
+                    res.status(400).send(e.message);
+                } else {
+                    res.status(200).send(r.recordset);
+                }
             });
         }
     });
 } 
 
-const getProduct= (param, result) => {//Obtener producto por el id
-    con.connect(slaveDB, (error) => {//Conexión a la BD
-        if (error) result.status(400).send(error.message);//Indicar error
-        else {
-            var request = new con.Request();//Nueva petición
-            request.query(`SELECT Productos.ID_Producto, Productos.Nombre, Productos.Stock, Productos.ImagenProd, Productos.Precio, Categorias.NombreCat FROM Productos INNER JOIN Categorias ON Productos.IdCategoria = Categorias.Id_Categoria WHERE Productos.ID_Producto = ${param.params.id}`, (e, r) => {
-                if (e) result.status(400).send(e.message);
-                else result.status(200).send(r.recordset[0]);//Devolver producto
+const getProduct= (req, res) => { //No estoy seguro de que cambia entre este y el de arriba
+    sql.connect(configSlave, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
+
+        } else {
+
+            var request = new sql.Request();
+            request.query(`SELECT P.idProduct, P.nameProduct, P.stockProduct, P.imgProduct, P.priceProduct, C.nameCategory FROM Categories AS C LEFT JOIN Products as P ON (P.idCategory = C.idCategory) WHERE P.idProduct = ${req.params.id}`, (e, r) => {
+                if (e) {
+                    res.status(400).send(e.message);
+                } else {
+                    res.status(200).send(r.recordset[0]);
+                }
             });
         }
     });
 } 
 
 
-const deleteProduct = (param, result) => {//Eliminar el producto con su id
-    con.connect(masterBD, (error) => {//Conexión a la BD
-        if (error) result.status(400).send(error.message);//Indicar error
-        else {
-            var request = new con.Request();//Nueva petición
-            request.query(`DELETE FROM Productos WHERE ID_Producto = ${param.params.id}`, (e, r) => {
-                if (e) result.status(400).send(e.message);
-                else result.status(200).send(r.recordset);
-            });
-        }
-    });
-}
+const deleteProduct = (req, res) => {
+    sql.connect(configMaster, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
 
-const addProduct = (param, result) => {//Agregar producto nuevo
-    con.connect(masterBD, (error) => {//Conexión a la BD
-        if (error) result.status(400).send(error.message);//Indicar error
-        else {
-            var request = new con.Request();//Nueva petición
-            var data = param.body;
-            request.query(`INSERT INTO Productos (IdCategoria, Nombre, ImagenProd, Stock, Precio) VALUES (${data.IdCategoria}, '${data.Nombre}', '${data.ImagenProd}', ${data.Stock}, ${data.Precio})`, (e, r) => {
-                if (e) result.status(400).send(`Request error: ${e.message}`);
-                else result.status(200).send(r.recordset);
-            });
-        }
-    });
-}
+        } else {
 
-const updateProduct = (param, result) => {//Actualizar un producto
-    con.connect(masterBD, (error) => {//Conexión a la BD
-        if (error) result.status(400).send(error.message);//Indicar error
-        else {
-            var request = new con.Request();//Nueva petición
-            var data = param.body;
-            request.query(`UPDATE Productos SET Nombre = '${data.Nombre}', Stock = ${data.Stock}, ImagenProd = '${data.ImagenProd}', Precio = ${data.Precio}, IdCategoria = ${data.IdCategoria} WHERE ID_Producto = ${data.ID_Producto}`, (e, r) => {
-                if (e)  result.status(400).send(`Request error: ${e.message}`);
-                else result.status(200).send(true);
-            });
-        }
-    });
-}
-
-const getCategories = (param, result) => {//Obtener categorias de productos
-    con.connect(slaveDB, (error) => {//Conexión a la BD
-        if (error) result.status(400).send(error.message);//Indicar error
-        else {
-            var request = new con.Request();//Nueva petición
-            request.query(`SELECT * FROM Categorias ORDER BY NombreCat`, (e, r) => {
-                if (e) result.status(400).send(e.message);
-                else result.status(200).send(r.recordset);
-            });
-        }
-    });
-}
-
-const getCategoryByName = (param, result) => {//Obtener categorias por su nombre
-    con.connect(slaveDB, (error) => {//Conexión a la BD
-        if (error) result.status(400).send(error.message);//Indicar error
-        else {
-            var request = new con.Request();//Nueva petición
-            request.query(`SELECT * FROM Categorias WHERE NombreCat = '${param.params.name}'`, (e, r) => {
-                if (e) result.status(400).send(`Request error: ${e.message}`);
-                else {
-                    if (r.recordset.length === 0) result.status(200).send({});    
-                    else result.status(200).send(r.recordset[0]);
+            var request = new sql.Request();
+            request.query(`DELETE FROM Products WHERE Products.idProduct = ${req.params.id}`, (e, r) => {
+                if (e) {
+                    res.status(400).send(e.message);
+                } else {
+                    res.status(200).send(r.recordset);
                 }
             });
         }
     });
 }
 
-module.exports = {
+const addProduct = (req, res) => {
+    sql.connect(configMaster, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
+        } else {
+            var request = new sql.Request();
+            var data = req.body;
+            request.query(`INSERT INTO Products (nameProduct, stockProduct, imgProduct, priceProduct, idCategory) VALUES ('${data.nameProduct}', ${data.stockProduct}, '${data.imgProduct}', ${data.priceProduct}, ${data.idCategory})`, (e, r) => {
+                if (e) {
+                    res.status(400).send(`Request error: ${e.message}`);
+                } else {
+                    res.status(200).send(r.recordset);
+                }
+            });
+        }
+    });
+}
+
+const updateProduct = (req, res) => {
+    sql.connect(configMaster, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
+
+        } else {
+            var request = new sql.Request();
+            var data = req.body;
+            request.query(`UPDATE Products SET nameProduct = '${data.nameProduct}', stockProduct = ${data.stockProduct}, imgProduct = '${data.imgProduct}', priceProduct = ${data.priceProduct}, idCategory = ${data.idCategory} WHERE idProduct = ${data.idProduct}`, (e, r) => {
+                if (e) {
+                    res.status(400).send(`Request error: ${e.message}`);
+                } else {
+                    res.status(200).send(true);
+                }
+            });
+        }
+    });
+}
+
+const getCategories = (req, res) => {
+    sql.connect(configSlave, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
+
+        } else {
+
+            var request = new sql.Request();
+            request.query(`SELECT * FROM Categories ORDER BY nameCategory`, (e, r) => {
+                if (e) {
+                    res.status(400).send(e.message);
+                } else {
+                    res.status(200).send(r.recordset);
+                }
+            });
+        }
+    });
+}
+
+const getCategoryByName = (req, res) => {
+    sql.connect(configSlave, (err) => {
+        if (err) {
+            res.status(400).send(err.message);
+
+        } else {
+            var request = new sql.Request();
+            request.query(`SELECT * FROM Categories WHERE nameCategory = '${req.params.name}'`, (e, r) => {
+                if (e) {
+                    res.status(400).send(`Request error: ${e.message}`);
+                } else {
+                    if (r.recordset.length === 0) {
+                        res.status(200).send({});    
+                    } else {
+                        res.status(200).send(r.recordset[0]);
+                    }
+                }
+            });
+        }
+    });
+}
+
+module.exports = { //Exportacion de los modulos para el routes 
     getProducts, 
     getProduct,
     deleteProduct, 

@@ -5,7 +5,7 @@ const router = express.Router();
 const { getProducts } = require("../controllers/product_controllers");
 const { getProduct } = require("../controllers/product_controllers");
 const { deleteProduct } = require("../controllers/product_controllers");
-router.get("/products", getProducts)
+router.get("/products", getProducts) //Se asigna a una ruta URL, en este caso con metodo get por ser solicitud hacia la direccion products
 router.get("/product/:id", getProduct)
 router.delete("/product/:id", deleteProduct)
 
@@ -51,3 +51,20 @@ router.post('/commit', commitTransaction);
 router.post('/rollback', rollbackTransaction);
 
 module.exports = router; //Exportacion del modulo
+/*module.exports = {
+    all: function(req, res){
+        res.send('All todos')
+    },
+    viewOne: function(req, res){
+        console.log('Viewing ' + req.params.id);
+    },
+    create: function(req, res){
+        console.log('Todo created')
+    },
+    destroy: function(req, res){
+        console.log('Todo deleted')
+    },
+    edit: function(req, res){
+        console.log('Todo ' + req.params.id + ' updated')
+    }
+};*/
